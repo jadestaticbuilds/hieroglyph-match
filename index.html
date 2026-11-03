@@ -6,93 +6,139 @@
 <title>Hieroglyph Match</title>
 <style>
   *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-  html,body{margin:0;padding:0;height:100%;background:#04070d;color:#e8fbff;font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;overflow:hidden}
-  body{display:flex;flex-direction:column;align-items:center}
-  header{width:100%;max-width:520px;padding:10px 12px 4px;text-align:center}
-  h1{margin:0;font-size:20px;letter-spacing:2px;color:#00f0ff;text-shadow:0 0 12px rgba(0,240,255,.55)}
-  header p{margin:4px 0 0;font-size:13px;color:#8fb8c4}
+  html,body{margin:0;padding:0;height:100%;background:#0a1526;color:#f2e6c4;font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;overflow:hidden}
+  /* Papyrus texture, CSS only: faint horizontal fibres over deep night blue. */
+  body{
+    display:flex;flex-direction:column;align-items:center;
+    background-color:#0a1526;
+    background-image:
+      repeating-linear-gradient(0deg, rgba(212,175,55,.05) 0 1px, transparent 1px 7px),
+      radial-gradient(ellipse at 50% -10%, rgba(37,99,160,.35), transparent 60%);
+  }
+  header{width:100%;max-width:520px;padding:8px 12px 4px;text-align:center;border-bottom:2px solid #c9a227}
+  h1{margin:0;font-size:20px;letter-spacing:3px;color:#e8c766;text-shadow:0 0 12px rgba(232,199,102,.45)}
+  header p{margin:4px 0 0;font-size:12px;color:#cbb98a}
   #wrap{width:min(94vw,460px);flex:1 1 auto;min-height:0;display:flex;flex-direction:column}
-  #stats{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;font-size:14px;padding:6px 0}
-  #stats span{color:#ffe259;font-weight:700}
-  #modeBar{display:flex;gap:8px;padding:2px 0 8px}
+  #stats{display:flex;gap:6px;justify-content:center;flex-wrap:wrap;font-size:13px;padding:5px 0}
+  #stats span{color:#e8c766;font-weight:700}
+  #modeBar{display:flex;gap:8px;padding:2px 0 6px}
   #modeBar button{flex:1}
-  button{min-height:48px;border:1px solid #00f0ff;background:#08131f;color:#e8fbff;font-size:16px;font-weight:700;padding:10px 8px;border-radius:10px;cursor:pointer}
-  button:active{background:#0f2a3d}
-  button[aria-pressed="true"]{background:#0f5e7a;box-shadow:0 0 14px rgba(0,240,255,.35)}
-  #board{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;flex:1 1 auto;align-content:start}
-  .tile{min-height:76px;border:1px solid #0f5e7a;border-radius:12px;background:#08131f;color:#e8fbff;font-size:34px;cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;transition:transform .12s ease, background .15s ease}
+  button{min-height:48px;border:1px solid #c9a227;background:#122a4d;color:#f2e6c4;font-size:15px;font-weight:700;padding:8px 6px;border-radius:10px;cursor:pointer}
+  button:active{background:#1a3a6b}
+  button[aria-pressed="true"]{background:#7a5d0e;box-shadow:0 0 14px rgba(232,199,102,.35)}
+  #board{display:grid;grid-template-columns:repeat(4,1fr);grid-auto-rows:1fr;gap:8px;flex:1 1 auto;min-height:0;align-content:stretch}
+  .tile{min-height:52px;border:1px solid #c9a227;border-radius:12px;background:#122a4d;color:#f2e6c4;font-size:30px;cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;transition:transform .12s ease, background .15s ease;position:relative}
   .tile:active{transform:scale(.97)}
-  .tile .glyph{font-size:36px;line-height:1}
-  .tile .name{font-size:11px;color:#8fb8c4}
-  .tile .back{font-size:26px;color:#00f0ff}
-  .tile.flipped{background:#0f2a3d;border-color:#00f0ff}
-  .tile.matched{background:#123a2e;border-color:#2ed8a0;box-shadow:0 0 12px rgba(46,216,160,.35)}
+  .tile .glyph{font-size:30px;line-height:1}
+  .tile .name{font-size:11px;color:#cbb98a}
+  .tile .back{font-size:24px;color:#e8c766}
+  /* Face-up tiles turn to papyrus: sand background, dark ink, gold name. */
+  .tile.flipped{background:linear-gradient(180deg,#f0dfae,#e0c98e);border-color:#c9a227;color:#12233f;animation:flipIn .3s ease}
+  .tile.flipped .name{color:#5a4210}
+  .tile.matched{border-color:#e8c766;border-width:2px;box-shadow:0 0 14px rgba(232,199,102,.55)}
+  .tile.matched::after{content:"✓";position:absolute;top:3px;right:7px;font-size:14px;color:#1a6b3a;font-weight:900}
   .tile:disabled{cursor:default}
-  #msg{text-align:center;min-height:22px;font-size:14px;color:#ff2e88;padding:6px 0 2px}
-  #bar{display:flex;gap:8px;padding:4px 0}
-  #bar button{flex:1}
-  #bests{text-align:center;font-size:12px;color:#8fb8c4;line-height:1.5;padding:2px 8px 4px}
-  footer{text-align:center;font-size:11px;color:#6f8d99;padding:4px 8px calc(10px + env(safe-area-inset-bottom))}
-  @media (prefers-reduced-motion: reduce){.tile{transition:none}}
+  @keyframes flipIn{from{transform:rotateY(90deg)}to{transform:rotateY(0deg)}}
+  #lore{margin:6px 0 2px;padding:8px 10px;border:1px solid #c9a227;border-radius:10px;background:rgba(18,42,77,.85);min-height:64px}
+  #lore .loreHead{font-size:14px;font-weight:800;color:#e8c766}
+  #lore .loreHead span{font-weight:400;color:#cbb98a}
+  #lore p{margin:3px 0 0;font-size:12.5px;line-height:1.35;color:#f2e6c4}
+  #learnStrip{display:none;gap:6px;overflow-x:auto;padding:4px 0 2px}
+  #learnStrip.open{display:flex}
+  #learnStrip button{flex:0 0 auto;min-height:44px;min-width:44px;padding:4px 8px;font-size:22px;border-radius:9px}
+  #learnStrip button.found{border-color:#e8c766;box-shadow:inset 0 0 0 2px rgba(232,199,102,.5)}
+  #msg{text-align:center;min-height:20px;font-size:13px;color:#e8c766;padding:4px 0 2px}
+  #bar{display:flex;gap:6px;padding:2px 0}
+  #bar button{flex:1;font-size:14px}
+  #bests{text-align:center;font-size:12px;color:#cbb98a;line-height:1.5;padding:2px 8px 2px}
+  footer{text-align:center;font-size:11px;color:#8fa3b8;padding:2px 8px calc(8px + env(safe-area-inset-bottom))}
+  @media (prefers-reduced-motion: reduce){.tile,.tile.flipped{transition:none;animation:none}}
   @media (max-width:380px){
     h1{font-size:17px}
-    .tile{min-height:68px}
-    .tile .glyph{font-size:32px}
-    button{font-size:15px;min-height:52px}
+    .tile{min-height:48px}
+    .tile .glyph{font-size:27px}
+    button{font-size:14px}
+    #lore p{font-size:12px}
   }
+</style>
+<style>
+/* prevent text selection popup on mobile tap */
+html,body{-webkit-user-select:none;-moz-user-select:none;-ms-user-select:none;user-select:none;-webkit-touch-callout:none;}
 </style>
 </head>
 <body>
 <header>
   <h1>HIEROGLYPH MATCH</h1>
-  <p>Was, Djed, and Ankh lead the set, from George's own tattoo symbols.</p>
+  <p>Was, Djed, and Ankh lead the set. Match a pair to learn its story.</p>
 </header>
 <div id="wrap">
   <div id="stats">
     Pairs: <span id="pairs">0 / 8</span>
     &nbsp; Flips: <span id="flips">0</span>
     &nbsp; <span id="timeLabel">Time</span>: <span id="time">0:00</span>
+    &nbsp; Found: <span id="found">0 / 8</span>
   </div>
   <div id="modeBar" role="group" aria-label="Game mode">
     <button id="relaxedBtn" type="button" aria-pressed="true">Relaxed, no timer</button>
     <button id="timedBtn" type="button" aria-pressed="false">Timed challenge</button>
   </div>
   <div id="board" aria-label="Memory match board"></div>
+  <div id="lore" aria-live="polite">
+    <div class="loreHead" id="loreHead">Match a pair to reveal its story</div>
+    <p id="loreText">Or tap Learn below to browse all eight symbols without playing. Browsing does not count as finding a symbol — only matching a pair does.</p>
+  </div>
+  <div id="learnStrip" aria-label="Learn all symbols"></div>
   <div id="msg"></div>
   <div id="bar">
     <button id="restartBtn" type="button">Restart</button>
+    <button id="learnBtn" type="button" aria-pressed="false">Learn</button>
     <button id="soundBtn" type="button">Sound: On</button>
     <button id="copyBtn" type="button">Copy result</button>
   </div>
   <div id="bests"></div>
-  <footer>A Jade Static Builds collab, built with Muse. No signup, no upload.</footer>
+  <footer>A George &amp; Strider collab, built with Muse. No signup, no upload.</footer>
 </div>
 <script>
 (function(){
   "use strict";
   /* Symbols are Unicode hieroglyph characters plus their names, drawn
-     with text and CSS only. No images, no copied artwork. */
+     with text and CSS only. No images, no copied artwork. Lore facts
+     are kept to well-established meanings; where a sign is mainly a
+     sound sign, that is said plainly instead of forcing a myth. */
   var SYMBOLS = [
-    { glyph: "𓋹", name: "Ankh", note: "life" },
-    { glyph: "𓌀", name: "Was", note: "power" },
-    { glyph: "𓊵", name: "Djed", note: "stability" },
-    { glyph: "𓂀", name: "Eye of Horus", note: "protection" },
-    { glyph: "𓆣", name: "Scarab", note: "rebirth" },
-    { glyph: "𓅓", name: "Owl", note: "wisdom" },
-    { glyph: "𓇳", name: "Sun disc", note: "Ra" },
-    { glyph: "𓈖", name: "Water", note: "life-giving" }
+    { glyph: "𓋹", name: "Ankh", meaning: "life",
+      fact: "Carried by gods and pharaohs in tomb art, and held to the nose of the dead to give the breath of life." },
+    { glyph: "𓌀", name: "Was", meaning: "power and dominion",
+      fact: "A staff topped with an animal head, carried by gods and pharaohs as a sign of dominion. It often appears beside the ankh and djed." },
+    { glyph: "𓊵", name: "Djed", meaning: "stability",
+      fact: "A column-like sign for stability, linked to Osiris. Raising the djed was a festival rite symbolising Osiris's backbone and the endurance of the kingdom." },
+    { glyph: "𓂀", name: "Eye of Horus", meaning: "protection and healing",
+      fact: "Horus's eye, torn out in his fight with Seth and restored by Thoth. Egyptians wore it as an amulet for protection and healing." },
+    { glyph: "𓆣", name: "Scarab", meaning: "rebirth",
+      fact: "The dung beetle rolling its ball recalled Khepri, the morning sun god rolling the sun across the sky, so scarab amulets promised rebirth." },
+    { glyph: "𓅓", name: "Owl", meaning: "mainly a sound sign, for the consonant m",
+      fact: "The owl is not a god or a wisdom symbol in Egypt — that wisdom link belongs to Greek Athena. In Egyptian writing it mostly writes the sound m." },
+    { glyph: "𓇳", name: "Sun disc", meaning: "the sun, and Ra",
+      fact: "The disc of the sun, worn on the head of Ra, the sun god who sailed across the sky by day and through the underworld by night." },
+    { glyph: "𓈖", name: "Water", meaning: "primeval waters, Nun, and the sound n",
+      fact: "Rippled water could write the sound n, and as Nun it named the dark primeval waters from which creation rose." }
   ];
   var TIMED_SECONDS = 90;
   var boardEl = document.getElementById("board");
   var pairsEl = document.getElementById("pairs");
   var flipsEl = document.getElementById("flips");
+  var foundEl = document.getElementById("found");
   var timeEl = document.getElementById("time");
   var timeLabelEl = document.getElementById("timeLabel");
   var msgEl = document.getElementById("msg");
   var bestsEl = document.getElementById("bests");
+  var loreHeadEl = document.getElementById("loreHead");
+  var loreTextEl = document.getElementById("loreText");
+  var learnStripEl = document.getElementById("learnStrip");
   var relaxedBtn = document.getElementById("relaxedBtn");
   var timedBtn = document.getElementById("timedBtn");
   var restartBtn = document.getElementById("restartBtn");
+  var learnBtn = document.getElementById("learnBtn");
   var soundBtn = document.getElementById("soundBtn");
   var copyBtn = document.getElementById("copyBtn");
 
@@ -110,6 +156,26 @@
   var tiles = [], firstTile = null, lockBoard = false, matchedPairs = 0, flips = 0;
   var won = false, timerId = null, startedAt = 0, secondsLeft = TIMED_SECONDS, elapsedSeconds = 0;
   var audioCtx = null;
+  /* Found symbols: matched in play only (browsing does not count).
+     Persisted in hm-found so a player can keep collecting across games;
+     existing hm-sound and hm-best-* keys are untouched. */
+  var found = {};
+  try {
+    JSON.parse(loadStored("hm-found", "[]")).forEach(function(i){ found[i] = true; });
+  } catch (e) {}
+  function saveFound(){
+    var list = [];
+    Object.keys(found).forEach(function(k){ list.push(parseInt(k, 10)); });
+    saveStored("hm-found", JSON.stringify(list));
+  }
+  function foundCount(){ var n = 0; Object.keys(found).forEach(function(){ n++; }); return n; }
+  function renderFound(){
+    foundEl.textContent = foundCount() + " / 8";
+    var chips = learnStripEl.querySelectorAll("button");
+    chips.forEach(function(chip, i){
+      if (found[i]) chip.classList.add("found"); else chip.classList.remove("found");
+    });
+  }
 
   function blip(freq, dur){
     if (!soundOn) return;
@@ -172,6 +238,31 @@
     }
     return deck;
   }
+  function showLore(symIndex){
+    var s = SYMBOLS[symIndex];
+    loreHeadEl.innerHTML = s.glyph + " " + s.name + " <span>— " + s.meaning + "</span>";
+    loreTextEl.textContent = s.fact;
+  }
+  function showFoundSummary(){
+    var names = [], missed = [];
+    SYMBOLS.forEach(function(s, i){
+      if (found[i]) names.push(s.name); else missed.push(s.name);
+    });
+    loreHeadEl.textContent = "You found " + names.length + " of 8 symbols";
+    loreTextEl.textContent = "Found: " + (names.length ? names.join(", ") : "none yet") + "." +
+      (missed.length ? " Still to find: " + missed.join(", ") + ". Tap Learn above to revisit any of them." : " All eight found.");
+  }
+  function renderLearnStrip(){
+    learnStripEl.innerHTML = "";
+    SYMBOLS.forEach(function(s, i){
+      var chip = document.createElement("button");
+      chip.type = "button"; chip.textContent = s.glyph;
+      chip.setAttribute("aria-label", "Learn about " + s.name);
+      chip.addEventListener("click", function(){ showLore(i); });
+      learnStripEl.appendChild(chip);
+    });
+    renderFound();
+  }
   function renderBoard(){
     boardEl.innerHTML = "";
     tiles = [];
@@ -190,7 +281,7 @@
     var s = SYMBOLS[tile.sym];
     tile.el.innerHTML = '<span class="glyph">' + s.glyph + '</span><span class="name">' + s.name + '</span>';
     tile.el.classList.add("flipped");
-    tile.el.setAttribute("aria-label", s.name + ", " + s.note);
+    tile.el.setAttribute("aria-label", s.name + ", " + s.meaning);
   }
   function hideTile(tile){
     tile.el.innerHTML = '<span class="back">?</span>';
@@ -209,6 +300,10 @@
       first.el.classList.add("matched"); tile.el.classList.add("matched");
       first.el.disabled = true; tile.el.disabled = true;
       matchedPairs++; pairsEl.textContent = matchedPairs + " / 8";
+      /* Matching teaches: the lore card now tells this symbol's story,
+         and the symbol joins the found collection. */
+      if (!found[tile.sym]) { found[tile.sym] = true; saveFound(); }
+      renderFound(); showLore(tile.sym);
       blip(780, 0.12);
       if (matchedPairs === SYMBOLS.length) winGame();
     } else {
@@ -235,6 +330,9 @@
     msgEl.textContent = "Matched all 8 pairs in " + flips + " flips, " + fmt(used) +
       (mode === "timed" ? " of the timed challenge." : ".") +
       (newBest ? " New best!" : "");
+    showFoundSummary();
+    learnStripEl.classList.add("open");
+    learnBtn.setAttribute("aria-pressed", "true");
     blip(880, 0.2);
   }
   function setMode(next){
@@ -251,19 +349,27 @@
     msgEl.textContent = mode === "timed"
       ? "Timed challenge: match all 8 pairs in 90 seconds."
       : "Relaxed mode: no timer. Take your time.";
-    updateTimeDisplay(); renderBoard(); renderBests();
+    loreHeadEl.textContent = "Match a pair to reveal its story";
+    loreTextEl.textContent = "Or tap Learn below to browse all eight symbols without playing. Browsing does not count as finding a symbol — only matching a pair does.";
+    updateTimeDisplay(); renderBoard(); renderBests(); renderFound();
   }
   relaxedBtn.addEventListener("click", function(){ setMode("relaxed"); });
   timedBtn.addEventListener("click", function(){ setMode("timed"); });
   restartBtn.addEventListener("click", newGame);
+  learnBtn.addEventListener("click", function(){
+    var open = learnStripEl.classList.toggle("open");
+    learnBtn.setAttribute("aria-pressed", open ? "true" : "false");
+  });
   soundBtn.addEventListener("click", function(){
     soundOn = !soundOn;
     soundBtn.textContent = soundOn ? "Sound: On" : "Sound: Off";
     saveStored("hm-sound", soundOn ? "on" : "off");
   });
   copyBtn.addEventListener("click", function(){
+    var foundNames = [];
+    SYMBOLS.forEach(function(s, i){ if (found[i]) foundNames.push(s.name); });
     var text = won
-      ? "Hieroglyph Match (" + mode + "): all 8 pairs in " + flips + " flips, " + fmt(elapsedSeconds) + "."
+      ? "Hieroglyph Match (" + mode + "): all 8 pairs in " + flips + " flips, " + fmt(elapsedSeconds) + ". Symbols found: " + foundNames.join(", ") + "."
       : "Hieroglyph Match (" + mode + "): " + matchedPairs + " of 8 pairs so far.";
     var done = function(){ msgEl.textContent = "Result copied. Paste it wherever you like, nothing was posted."; };
     try {
@@ -276,6 +382,7 @@
     if (e.target && e.target.closest && e.target.closest("#board")) e.preventDefault();
   }, { passive: false });
 
+  renderLearnStrip();
   newGame();
 })();
 </script>
